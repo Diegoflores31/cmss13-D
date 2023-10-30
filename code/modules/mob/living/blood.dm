@@ -7,7 +7,7 @@
 
 // Takes care blood loss and regeneration
 /mob/living/carbon/human/handle_blood()
-	if(NO_BLOOD in species.flags)
+	if((species.flags & NO_BLOOD) && !(species.flags & IS_SYNTHETIC))
 		return
 
 	if(stat != DEAD && bodytemperature >= 170) //Dead or cryosleep people do not pump the blood.
@@ -50,6 +50,10 @@
 					var/word = pick("dizzy","woozy","faint")
 					to_chat(src, SPAN_DANGER("You feel [word]."))
 			if(BLOOD_VOLUME_BAD to BLOOD_VOLUME_OKAY)
+				if(species.flags & IS_SYNTHETIC)
+					if(prob(10))
+						apply_effect(rand(1, 2), WEAKEN)
+						to_chat(src, SPAN_DANGER("Internal power cell fault detected.\nSeek nearest recharging station."))
 				if(eye_blurry < 50)
 					AdjustEyeBlur(6)
 				oxyloss += 3
@@ -58,16 +62,22 @@
 					var/word = pick("dizzy","woozy","faint")
 					to_chat(src, SPAN_DANGER("You feel very [word]."))
 			if(BLOOD_VOLUME_SURVIVE to BLOOD_VOLUME_BAD)
-				if(eye_blurry < 50)
-					AdjustEyeBlur(6)
-				oxyloss += 8
-				toxloss += 3
-				if(prob(15))
-					apply_effect(rand(1,3), PARALYZE)
-					var/word = pick("dizzy","woozy","faint")
-					to_chat(src, SPAN_DANGER("You feel extremely [word]."))
+				if(species.flags & IS_SYNTHETIC)
+					if(prob(10))
+						apply_effect(rand(1, 2), PARALYZE)
+						to_chat(src, SPAN_DANGER("Critical power cell failure detected.\nSeek recharging station immediately."))
+				else
+					if(eye_blurry < 50)
+						AdjustEyeBlur(6)
+						oxyloss += 8
+						toxloss += 3
+					if(prob(15))
+						apply_effect(rand(1, 3), PARALYZE)
+						var/word = pick("dizzy", "woozy", "faint")
+						to_chat(src, SPAN_DANGER("You feel extremely [word]."))
 			if(0 to BLOOD_VOLUME_SURVIVE)
-				death(create_cause_data("blood loss"))
+				death(create_cause_data(species.flags & IS_SYNTHETIC ? "power failure" : "blood loss"))
+
 
 // Xeno blood regeneration
 /mob/living/carbon/xenomorph/handle_blood()
@@ -91,7 +101,7 @@
 /mob/living/carbon/human/drip(amt)
 	if(in_stasis) // stasis now stops bloodloss
 		return
-	if(NO_BLOOD in species.flags)
+	if((species.flags & NO_BLOOD) && !(species.flags & IS_SYNTHETIC))
 		return
 	..()
 
@@ -272,7 +282,7 @@
 		return "xenoblood"
 
 /mob/living/carbon/human/get_blood_id()
-	if((NO_BLOOD in species.flags))
+	if(species.flags & NO_BLOOD)
 		return
 	if(special_blood)
 		return special_blood
