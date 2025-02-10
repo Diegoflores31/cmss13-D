@@ -326,12 +326,12 @@
 	item_state = "satchel-charge"
 	overlay_image = "satchel-active"
 	w_class = SIZE_SMALL
-	angle = 55
+	angle = 60
 	timer = 3
 	min_timer = 3
 	penetration = 0.60
 	deploying_time = 10
-	var/shrapnel_volume = 40
+	var/shrapnel_volume = 15
 	var/shrapnel_type = /datum/ammo/bullet/shrapnel/metal
 	var/explosion_strength = 60
 
@@ -383,12 +383,8 @@
 	desc = "An alien explosive device. Who knows what it might do."
 	icon_state = "plasma-charge"
 	overlay_image = "plasma-active"
-	w_class = SIZE_SMALL
-	angle = 55
 	timer = 5
 	min_timer = 5
-	penetration = 0.60
-	deploying_time = 10
 	flags_item = NOBLUDGEON|ITEM_PREDATOR
 	shrapnel_volume = 10
 	shrapnel_type = /datum/ammo/bullet/shrapnel/plasma
